@@ -6,18 +6,17 @@
 
 #include <stdint.h>
 
-//sm4基本数据类型,方便进行各种步骤的分割
-union sm4data{
-    uint32_t u32[4];
-    uint8_t u8[16];
-};
-
 //sm4封装的uint32类型方便进行分割
 union sm4uint32{
     uint32_t u32;
     uint8_t u8[4];
 };
 
+//sm4基本数据类型,方便进行各种步骤的分割
+union sm4data{
+    uint32_t u32[4];
+    union sm4uint32 sm4u32[4];
+};
 
 //sbox函数
 uint8_t sbox(uint8_t data);

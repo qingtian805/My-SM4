@@ -3,18 +3,21 @@
 #include <stdio.h>
 #include "sm4kdf.h"
 
-//预期输出: 428d3654622934961cf72e59124a012
+//预期输出: 
 //说明:这段数据是rk第28-31,中间缺一个0
 
 int main(void)
 {
     union sm4data key = {0x01234567, 0x89ABCDEF, 0xFEDCBA98, 0x76543210};
+    union sm4uint32 rk;
+    int i;
 
-    printf("%x%x%x%x\n",key.u32[0], key.u32[1], key.u32[2], key.u32[3]);
+    _sm4kdf_xorfx_(&key);
 
-    key = sm4kdf(key);
-
-    printf("%x%x%x%x\n",key.u32[0], key.u32[1], key.u32[2], key.u32[3]);
+    for(i = 0; i < 32; i++){
+        rk = sm4kdf(&key, i);
+        printf("rk%2d = %x\n",i , rk.u32);
+    }
 
     return 0;
 }
