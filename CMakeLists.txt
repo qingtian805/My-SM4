@@ -16,5 +16,6 @@ file(GLOB SRC_FILES
 add_executable(basetest ./test/codetest/basetest.c ${SRC_FILES})
 add_executable(kdftest ./test/functest/kdftest.c ${SRC_FILES})
 add_executable(roundtest ./test/functest/roundtest.c ${SRC_FILES})
+add_executable(speedtest ./test/functest/speedtest.c ${SRC_FILES})
 
 #target_link_libraries(chaos-enc-test ${OpenCV_LIBS})
