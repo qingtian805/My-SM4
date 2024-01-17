@@ -15,5 +15,6 @@ file(GLOB SRC_FILES
 #添加编译文件,使用SRC_FILES变量中的所有文件
 add_executable(basetest ./test/codetest/basetest.c ${SRC_FILES})
 add_executable(kdftest ./test/functest/kdftest.c ${SRC_FILES})
+add_executable(roundtest ./test/functest/roundtest.c ${SRC_FILES})
 
 #target_link_libraries(chaos-enc-test ${OpenCV_LIBS})

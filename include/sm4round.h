@@ -4,6 +4,6 @@
 #include <stdint.h>
 #include "sm4base.h"
 
-void _sm4_round_(union sm4data *data, union sm4uint32 rk);
+void _sm4_round_(union sm4data *data, int round, union sm4uint32 rk);
 
 #endif
