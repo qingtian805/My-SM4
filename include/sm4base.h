@@ -25,7 +25,7 @@ uint8_t sbox(uint8_t data);
 inline uint32_t _sm4_asm_rol_(uint32_t data, uint32_t bits)
 {
     asm ("rol %1, %0;\n\t"
-    : "+a" (data)
+    : "+r" (data)
     : "cI" (bits));
 
     return data;
