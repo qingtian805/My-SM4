@@ -10,12 +10,12 @@ static const uint32_t CK[32] = {0x00070E15, 0x1C232A31, 0x383F464D, 0x545B6269,
                          0xA0A7AEB5, 0xBCC3CAD1, 0xD8DFE6ED, 0xF4FB0209,
                          0x10171E25, 0x2C333A41, 0x484F565D, 0x646B7279};
 
-static inline void _sm4kdf_xorfk_(union sm4uint32 *keys, union sm4uint32 *k)
+static inline void _sm4kdf_xorfk_(uint32_t *keys, union sm4uint32 *k)
 {
-    k[0].u32 = keys[0].u32 ^ 0xA3B1BAC6;
-    k[1].u32 = keys[1].u32 ^ 0x56AA3350;
-    k[2].u32 = keys[2].u32 ^ 0x677D9197;
-    k[3].u32 = keys[3].u32 ^ 0xB27022DC;
+    k[0].u32 = keys[0] ^ 0xA3B1BAC6;
+    k[1].u32 = keys[1] ^ 0x56AA3350;
+    k[2].u32 = keys[2] ^ 0x677D9197;
+    k[3].u32 = keys[3] ^ 0xB27022DC;
 }
 
 //sm4密钥扩展算法的T'变换
@@ -30,11 +30,10 @@ static inline union sm4uint32 _sm4kdf_t_(union sm4uint32 keys)
     return keys;
 }
 
-void sm4kdf(union sm4uint32 *keys, union sm4uint32 *rk)
+void sm4kdf(uint32_t *keys, uint32_t *rk)
 {
     int i;
     union sm4uint32 xor;
-
     union sm4uint32 k[4];
     
     _sm4kdf_xorfk_(keys, k);
@@ -52,9 +51,9 @@ void sm4kdf(union sm4uint32 *keys, union sm4uint32 *rk)
         xor.u32 = k[0].u32 ^ k[1].u32 ^ k[2].u32 ^ CK[i + 3];
         k[3].u32 ^= _sm4kdf_t_(xor).u32;
 
-        rk[i    ].u32 = k[0].u32;
-        rk[i + 1].u32 = k[1].u32;
-        rk[i + 2].u32 = k[2].u32;
-        rk[i + 3].u32 = k[3].u32;
+        rk[i    ] = k[0].u32;
+        rk[i + 1] = k[1].u32;
+        rk[i + 2] = k[2].u32;
+        rk[i + 3] = k[3].u32;
     }
 }
