@@ -34,14 +34,14 @@ int main(void)
     
     for(i = 0; i < 1048576; i++)
         sm4_enc(counter, data_out, rk);
-        counter[3]++;
-        counter[7]++;
-        counter[11]++;
-        counter[15]++;
-        counter[19]++;
-        counter[23]++;
-        counter[27]++;
-        counter[31]++;
+        counter[3 ] += 8;
+        counter[7 ] += 8;
+        counter[11] += 8;
+        counter[15] += 8;
+        counter[19] += 8;
+        counter[23] += 8;
+        counter[27] += 8;
+        counter[31] += 8;
 
     end = clock();
 

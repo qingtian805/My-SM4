@@ -23,9 +23,11 @@ add_executable(kdftest ./test/functest/kdftest.c ${PROJECT_SOURCE_DIR}/src/sm4/s
 add_executable(sm4test ./test/functest/sm4test.c ${SRC_FILES_SM4})
 add_executable(speedtest ./test/functest/speedtest.c ${SRC_FILES_SM4})
 
+add_executable(sm4testavx ./test/functest/sm4test_avx.c ${SRC_FILES_SM4AVX})
 add_executable(speedtestavx ./test/functest/speedtest_avx.c ${SRC_FILES_SM4AVX})
 
 target_compile_options(avxtest PRIVATE -mavx2 PRIVATE -mavx)
+target_compile_options(sm4testavx PRIVATE -mavx2 PRIVATE -mavx)
 target_compile_options(speedtestavx PRIVATE -mavx2 PRIVATE -mavx)
 
 #target_link_libraries(chaos-enc-test ${OpenCV_LIBS})

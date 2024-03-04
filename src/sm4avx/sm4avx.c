@@ -1,5 +1,6 @@
 #include <immintrin.h>
 #include <unitypes.h>
+#include <memory.h>
 #include "sm4avx.h"
 
 //便于分割，用于计算轮密钥
@@ -277,31 +278,31 @@ static inline __m256i sm4_t_8(__m256i data)
 }
 
 #define MATRIX_TO_DATA(M256_MATRIX, U32_DATA, INDEX) \
-    U32_DATA[     INDEX] = M256_MATRIX[    INDEX]; \
-    U32_DATA[4  + INDEX] = M256_MATRIX[1 + INDEX]; \
-    U32_DATA[8  + INDEX] = M256_MATRIX[2 + INDEX]; \
-    U32_DATA[12 + INDEX] = M256_MATRIX[3 + INDEX]; \
-    U32_DATA[16 + INDEX] = M256_MATRIX[4 + INDEX]; \
-    U32_DATA[20 + INDEX] = M256_MATRIX[5 + INDEX]; \
-    U32_DATA[24 + INDEX] = M256_MATRIX[6 + INDEX]; \
-    U32_DATA[28 + INDEX] = M256_MATRIX[7 + INDEX]
+    U32_DATA[     INDEX] = M256_MATRIX[0]; \
+    U32_DATA[4  + INDEX] = M256_MATRIX[1]; \
+    U32_DATA[8  + INDEX] = M256_MATRIX[2]; \
+    U32_DATA[12 + INDEX] = M256_MATRIX[3]; \
+    U32_DATA[16 + INDEX] = M256_MATRIX[4]; \
+    U32_DATA[20 + INDEX] = M256_MATRIX[5]; \
+    U32_DATA[24 + INDEX] = M256_MATRIX[6]; \
+    U32_DATA[28 + INDEX] = M256_MATRIX[7]
 
 void sm4_enc(uint32_t *data_in, uint32_t *data_out, uint32_t *rk)
 {
     int i;
-    uint32_t *d32;
     __m256i d[4];
     __m256i index[4];
+    uint32_t *d32 = (uint32_t*)d;
 
     //load data to matrix
-    index[0] = _mm256_set_epi32(0, 4,  8, 12, 16, 20, 24, 28);
-    index[1] = _mm256_set_epi32(1, 5,  9, 13, 17, 21, 25, 29);
-    index[2] = _mm256_set_epi32(2, 6, 10, 14, 18, 22, 26, 30);
-    index[3] = _mm256_set_epi32(3, 7, 11, 15, 19, 23, 27, 31);
+    index[0] = _mm256_setr_epi32(0, 4,  8, 12, 16, 20, 24, 28);
+    index[1] = _mm256_setr_epi32(1, 5,  9, 13, 17, 21, 25, 29);
+    index[2] = _mm256_setr_epi32(2, 6, 10, 14, 18, 22, 26, 30);
+    index[3] = _mm256_setr_epi32(3, 7, 11, 15, 19, 23, 27, 31);
     d[0] = _mm256_i32gather_epi32(data_in, index[0], 4);
-    d[1] = _mm256_i32gather_epi32(data_in, index[0], 4);
-    d[2] = _mm256_i32gather_epi32(data_in, index[0], 4);
-    d[3] = _mm256_i32gather_epi32(data_in, index[0], 4);
+    d[1] = _mm256_i32gather_epi32(data_in, index[1], 4);
+    d[2] = _mm256_i32gather_epi32(data_in, index[2], 4);
+    d[3] = _mm256_i32gather_epi32(data_in, index[3], 4);
 
     //calculate 4 rounds per loop
     for(i = 0; i < 32; i += 4){
@@ -337,8 +338,10 @@ void sm4_enc(uint32_t *data_in, uint32_t *data_out, uint32_t *rk)
     }
     
     //extract matrix
-    MATRIX_TO_DATA(d[0], data_out, 0);
-    MATRIX_TO_DATA(d[1], data_out, 1);
-    MATRIX_TO_DATA(d[2], data_out, 2);
-    MATRIX_TO_DATA(d[3], data_out, 3);
+    MATRIX_TO_DATA(d32, data_out, 0);
+    MATRIX_TO_DATA((d32 + 8), data_out, 1);
+    MATRIX_TO_DATA((d32 + 16), data_out, 2);
+    MATRIX_TO_DATA((d32 + 24), data_out, 3);
+
+    // memcpy(data_out, d, sizeof(uint32_t) * 32);
 }
