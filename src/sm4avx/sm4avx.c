@@ -278,14 +278,14 @@ static inline __m256i sm4_t_8(__m256i data)
 }
 
 #define MATRIX_TO_DATA(M256_MATRIX, U32_DATA, INDEX) \
-    U32_DATA[     INDEX] = M256_MATRIX[0]; \
-    U32_DATA[4  + INDEX] = M256_MATRIX[1]; \
-    U32_DATA[8  + INDEX] = M256_MATRIX[2]; \
-    U32_DATA[12 + INDEX] = M256_MATRIX[3]; \
-    U32_DATA[16 + INDEX] = M256_MATRIX[4]; \
-    U32_DATA[20 + INDEX] = M256_MATRIX[5]; \
-    U32_DATA[24 + INDEX] = M256_MATRIX[6]; \
-    U32_DATA[28 + INDEX] = M256_MATRIX[7]
+    (U32_DATA)[     INDEX] = (M256_MATRIX)[0]; \
+    (U32_DATA)[4  + INDEX] = (M256_MATRIX)[1]; \
+    (U32_DATA)[8  + INDEX] = (M256_MATRIX)[2]; \
+    (U32_DATA)[12 + INDEX] = (M256_MATRIX)[3]; \
+    (U32_DATA)[16 + INDEX] = (M256_MATRIX)[4]; \
+    (U32_DATA)[20 + INDEX] = (M256_MATRIX)[5]; \
+    (U32_DATA)[24 + INDEX] = (M256_MATRIX)[6]; \
+    (U32_DATA)[28 + INDEX] = (M256_MATRIX)[7]
 
 void sm4_enc(uint32_t *data_in, uint32_t *data_out, uint32_t *rk)
 {
@@ -339,9 +339,9 @@ void sm4_enc(uint32_t *data_in, uint32_t *data_out, uint32_t *rk)
     
     //extract matrix
     MATRIX_TO_DATA(d32, data_out, 0);
-    MATRIX_TO_DATA((d32 + 8), data_out, 1);
-    MATRIX_TO_DATA((d32 + 16), data_out, 2);
-    MATRIX_TO_DATA((d32 + 24), data_out, 3);
+    MATRIX_TO_DATA(d32 + 8, data_out, 1);
+    MATRIX_TO_DATA(d32 + 16, data_out, 2);
+    MATRIX_TO_DATA(d32 + 24, data_out, 3);
 
     // memcpy(data_out, d, sizeof(uint32_t) * 32);
 }
