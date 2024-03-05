@@ -24,18 +24,32 @@ int main(void)
     uint32_t rk[32];
     int i;
     
+    //Generating Round Keys
     sm4kdf(key, rk);
 
+    // Testing Eecrypt function
     sm4_enc(data, data_out, rk);
 
+    printf("----Testing Eecrypt function----\n");
     for(i = 0; i < 4; i++){
-        printf("X%d = %x\n",i + 28 , data_out[i]);
+        printf("X%d = %x\n",i + 28 , data_out[3 - i]);
     }
+
     printf("----Printing All Data in data_out----\n");
     for(i = 0; i < 32; i++)
+        printf("%d\t= %x\n",i , data_out[i]);
+
+    // Testing Decrypt function
+    sm4_dec(data_out, data_out, rk);
+    printf("----Testing Decrypt function----\n");
+    for(i = 0; i < 4; i++){
         printf("X%d = %x\n",i , data_out[i]);
+    }
+
+    printf("----Printing All Data in data_out----\n");
+    for(i = 0; i < 32; i++)
+        printf("%d\t= %x\n",i , data_out[i]);
         
     return 0;
-    
     
 }

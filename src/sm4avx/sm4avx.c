@@ -338,10 +338,69 @@ void sm4_enc(uint32_t *data_in, uint32_t *data_out, uint32_t *rk)
     }
     
     //extract matrix
-    MATRIX_TO_DATA(d32, data_out, 0);
-    MATRIX_TO_DATA(d32 + 8, data_out, 1);
-    MATRIX_TO_DATA(d32 + 16, data_out, 2);
-    MATRIX_TO_DATA(d32 + 24, data_out, 3);
+    MATRIX_TO_DATA(d32 + 24, data_out, 0);
+    MATRIX_TO_DATA(d32 + 16, data_out, 1);
+    MATRIX_TO_DATA(d32 + 8 , data_out, 2);
+    MATRIX_TO_DATA(d32     , data_out, 3);
+
+    // memcpy(data_out, d, sizeof(uint32_t) * 32);
+}
+
+void sm4_dec(uint32_t *data_in, uint32_t *data_out, uint32_t *rk)
+{
+    int i;
+    __m256i d[4];
+    __m256i index[4];
+    uint32_t *d32 = (uint32_t*)d;
+
+    //load data to matrix
+    index[0] = _mm256_setr_epi32(0, 4,  8, 12, 16, 20, 24, 28);
+    index[1] = _mm256_setr_epi32(1, 5,  9, 13, 17, 21, 25, 29);
+    index[2] = _mm256_setr_epi32(2, 6, 10, 14, 18, 22, 26, 30);
+    index[3] = _mm256_setr_epi32(3, 7, 11, 15, 19, 23, 27, 31);
+    d[0] = _mm256_i32gather_epi32(data_in, index[0], 4);
+    d[1] = _mm256_i32gather_epi32(data_in, index[1], 4);
+    d[2] = _mm256_i32gather_epi32(data_in, index[2], 4);
+    d[3] = _mm256_i32gather_epi32(data_in, index[3], 4);
+
+    //calculate 4 rounds per loop
+    for(i = 31; i > 0; i -= 4){
+        //load round key
+        index[0] = _mm256_set1_epi32(rk[i    ]);
+        index[1] = _mm256_set1_epi32(rk[i - 1]);
+        index[2] = _mm256_set1_epi32(rk[i - 2]);
+        index[3] = _mm256_set1_epi32(rk[i - 3]);
+
+        //d[0] ^= sm4_t(d[1] ^ d[2] ^ d[3] ^ rk[i    ]);
+        d[0] = _mm256_xor_si256(d[0],               \
+                sm4_t_8(_mm256_xor_si256(index[0],      \
+                _mm256_xor_si256(d[1],              \
+                _mm256_xor_si256(d[2], d[3])))));
+
+        //d[1] ^= sm4_t(d[2] ^ d[3] ^ d[0] ^ rk[i + 1]);
+        d[1] = _mm256_xor_si256(d[1],               \
+                sm4_t_8(_mm256_xor_si256(index[1],      \
+                _mm256_xor_si256(d[2],              \
+                _mm256_xor_si256(d[3], d[0])))));
+
+        //d[2] ^= sm4_t(d[3] ^ d[0] ^ d[1] ^ rk[i + 2]);
+        d[2] = _mm256_xor_si256(d[2],               \
+                sm4_t_8(_mm256_xor_si256(index[2],      \
+                _mm256_xor_si256(d[3],              \
+                _mm256_xor_si256(d[0], d[1])))));
+
+        //d[3] ^= sm4_t(d[0] ^ d[1] ^ d[3] ^ rk[i + 3]);
+        d[3] = _mm256_xor_si256(d[3],               \
+                sm4_t_8(_mm256_xor_si256(index[3],      \
+                _mm256_xor_si256(d[0],              \
+                _mm256_xor_si256(d[1], d[2])))));
+    }
+    
+    //extract matrix
+    MATRIX_TO_DATA(d32 + 24, data_out, 0);
+    MATRIX_TO_DATA(d32 + 16, data_out, 1);
+    MATRIX_TO_DATA(d32 + 8 , data_out, 2);
+    MATRIX_TO_DATA(d32     , data_out, 3);
 
     // memcpy(data_out, d, sizeof(uint32_t) * 32);
 }
